@@ -1,0 +1,30 @@
+{
+  "name": "tabs-zero",
+  "version": "0.1.0",
+  "description": "Inbox zero for your browser tabs.",
+  "type": "module",
+  "scripts": {
+    "test:unit": "vitest run",
+    "test:integration": "HEADLESS=1 node --test tests/integration/smoke.test.js",
+    "test": "npm run test:unit",
+    "lint": "web-ext lint --source-dir=src",
+    "screenshot": "node scripts/screenshot.mjs",
+    "start": "web-ext run --source-dir=src",
+    "build": "web-ext build --source-dir=src"
+  },
+  "keywords": [
+    "firefox",
+    "webextension",
+    "tabs"
+  ],
+  "author": "seriousben",
+  "license": "MIT",
+  "devDependencies": {
+    "geckodriver": "^6.1.0",
+    "playwright": "^1.58.2",
+    "selenium-webdriver": "^4.27.0",
+    "selenium-webext-bridge": "^0.4.0",
+    "vitest": "^2.1.8",
+    "web-ext": "^8.3.0"
+  }
+}

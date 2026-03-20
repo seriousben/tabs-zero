@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+  "name": "Tabs Zero",
+  "version": "0.1.0",
+  "description": "Inbox zero for your browser tabs.",
+  "permissions": [
+    "tabs",
+    "storage",
+    "alarms",
+    "notifications",
+    "menus",
+    "idle"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "icons/icon.svg"
+  },
+  "background": {
+    "scripts": ["tst.js", "background.js"]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "tabs-zero@seriousben"
+    }
+  },
+  "icons": {
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg"
+  }
+}
