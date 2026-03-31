@@ -40,7 +40,10 @@ async function toggleDoNotExpire(url) {
 // --- Tab classification ---
 
 function isSystemTab(tab) {
-  return tab.url && (tab.url.startsWith('about:') || tab.url.startsWith('moz-extension:') || tab.url.startsWith('chrome:'));
+  if (!tab.url) return false;
+  // about:newtab and about:blank are not system tabs; they can be expired
+  if (tab.url === 'about:newtab' || tab.url === 'about:blank') return false;
+  return tab.url.startsWith('about:') || tab.url.startsWith('moz-extension:') || tab.url.startsWith('chrome:');
 }
 
 function isProtected(tab) {

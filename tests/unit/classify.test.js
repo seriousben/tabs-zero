@@ -3,8 +3,12 @@ import { isSystemTab, isProtected, isExpirable } from '../../src/core/classify.j
 
 describe('classify', () => {
   describe('isSystemTab', () => {
-    it('returns true for about:blank', () => {
-      expect(isSystemTab({ url: 'about:blank' })).toBe(true);
+    it('returns false for about:blank (can be expired)', () => {
+      expect(isSystemTab({ url: 'about:blank' })).toBe(false);
+    });
+
+    it('returns false for about:newtab (can be expired)', () => {
+      expect(isSystemTab({ url: 'about:newtab' })).toBe(false);
     });
 
     it('returns true for about:preferences', () => {

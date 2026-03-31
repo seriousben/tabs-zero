@@ -12,6 +12,12 @@ export function isSystemTab(tab) {
     return false;
   }
 
+  // about:newtab and about:blank are not considered system tabs
+  const expirableAboutPages = ['about:newtab', 'about:blank'];
+  if (expirableAboutPages.some(page => tab.url === page)) {
+    return false;
+  }
+
   const systemPrefixes = ['about:', 'moz-extension:', 'chrome:'];
   
   return systemPrefixes.some(prefix => tab.url.startsWith(prefix));
