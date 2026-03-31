@@ -40,6 +40,7 @@ function isDoNotExpire(tab) {
 const LUCIDE_PATHS = {
   shield: ['M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'],
   'shield-off': ['m2 2 20 20', 'M5 5a1 1 0 0 0-1 1v7c0 5 3.5 7.5 7.67 8.94a1 1 0 0 0 .67.01c2.35-.82 4.48-1.97 5.9-3.71', 'M9.309 3.652A12.252 12.252 0 0 0 11.24 2.28a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1v7a9.784 9.784 0 0 1-.08 1.264'],
+  x: ['M18 6 6 18', 'm6 6 12 12'],
 };
 
 function makeLucideIcon(name, size) {
@@ -295,6 +296,10 @@ function renderIdleTabs() {
     li.appendChild(titleEl);
     li.appendChild(meta);
 
+    // Actions container (right-aligned)
+    const actions = document.createElement('span');
+    actions.className = 'idle-tab-actions';
+
     if (!isNeverExpire(tab) || isDoNotExpire(tab)) {
       const dneBtn = document.createElement('button');
       dneBtn.className = 'btn-do-not-expire' + (isProtectedTab ? ' is-active' : '');
@@ -304,8 +309,25 @@ function renderIdleTabs() {
         e.stopPropagation();
         toggleDoNotExpire(tab.url);
       });
-      li.appendChild(dneBtn);
+      actions.appendChild(dneBtn);
     }
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'btn-close-tab';
+    closeBtn.title = 'Close tab';
+    closeBtn.appendChild(makeLucideIcon('x', 12));
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeTabs([tab.id]);
+    });
+    actions.appendChild(closeBtn);
+
+    li.appendChild(actions);
+
+    // Click row to switch to tab
+    li.addEventListener('click', () => {
+      activateTab(tab.id);
+    });
 
     return li;
   }
@@ -498,6 +520,17 @@ function renderIdleTabs() {
   }
 
   container.scrollTop = scrollTop;
+}
+
+function activateTab(id) {
+  if (IS_EXTENSION) {
+    browser.tabs.update(id, { active: true }).then(() => {
+      window.close();
+    }).catch(err => console.error('Failed to activate tab:', err));
+  } else {
+    const tab = allTabs.find(t => t.id === id);
+    alert(`Would switch to tab: ${tab ? tab.title : id}`);
+  }
 }
 
 function closeTabs(ids) {
