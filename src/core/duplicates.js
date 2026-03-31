@@ -11,35 +11,28 @@ function normalizeUrl(url) {
 }
 
 /**
- * Finds groups of duplicate tabs (same URL).
+ * Finds groups of duplicate tabs (same URL and same title).
+ * Tabs are grouped by the combination of normalized URL and title.
  * @param {Array} tabs - Array of tab objects
  * @returns {Array} Array of {url, tabs} objects where tabs.length >= 2
  */
 export function findDuplicateGroups(tabs) {
-  // Group tabs by normalized URL
-  const urlMap = new Map();
+  const map = new Map();
 
   for (const tab of tabs) {
-    // Skip tabs without URL or with about: URLs
-    if (!tab.url || tab.url.startsWith('about:')) {
-      continue;
-    }
+    if (!tab.url || tab.url.startsWith('about:')) continue;
 
-    const normalizedUrl = normalizeUrl(tab.url);
-    
-    if (!urlMap.has(normalizedUrl)) {
-      urlMap.set(normalizedUrl, []);
-    }
-    
-    urlMap.get(normalizedUrl).push(tab);
+    const key = normalizeUrl(tab.url) + '\0' + (tab.title || '');
+
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(tab);
   }
 
-  // Filter to only groups with 2 or more tabs
   const groups = [];
-  for (const [url, tabs] of urlMap.entries()) {
-    if (tabs.length >= 2) {
-      groups.push({ url, tabs });
-    }
+  for (const [key, group] of map.entries()) {
+    if (group.length < 2) continue;
+    const url = key.split('\0')[0];
+    groups.push({ url, tabs: group });
   }
 
   return groups;
