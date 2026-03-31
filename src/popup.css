@@ -473,6 +473,14 @@ h1 {
   gap: 6px;
   padding: 4px 10px;
   border-top: 1px solid #ededf0;
+  cursor: pointer;
+}
+
+.idle-tab-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -568,6 +576,39 @@ h1 {
 
 @media (prefers-color-scheme: dark) {
   .idle-tab.is-protected { border-left-color: #30e60b; }
+}
+
+/* Close tab button */
+.btn-close-tab {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.1s ease, color 0.1s ease;
+  line-height: 0;
+  color: #5b5b66;
+  display: flex;
+  align-items: center;
+  border-radius: 3px;
+}
+
+.idle-tab:hover .btn-close-tab {
+  opacity: 0.4;
+}
+
+.btn-close-tab:hover {
+  opacity: 1 !important;
+  color: #c50042;
+  background: rgba(197, 0, 66, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-close-tab { color: #8f8f9d; }
+  .btn-close-tab:hover {
+    color: #ff6b8a;
+    background: rgba(255, 107, 138, 0.12);
+  }
 }
 
 /* Do not expire button */
