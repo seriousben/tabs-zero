@@ -221,6 +221,8 @@ const BUCKETS = [
   { label: 'Idle > 1 day',  minMs: 24 * 60 * 60 * 1000 },
   { label: 'Idle > 6 hours', minMs: 6 * 60 * 60 * 1000 },
   { label: 'Idle > 1 hour',  minMs: 60 * 60 * 1000 },
+  { label: 'Idle > 30 min', minMs: 30 * 60 * 1000 },
+  { label: 'Idle > 15 min', minMs: 15 * 60 * 1000 },
 ];
 
 function isNeverExpire(tab) {
@@ -251,7 +253,7 @@ function groupAllTabs() {
     groups.push({ label: bucket.label, expirable, protected: protected_, pct });
   }
 
-  // Remaining tabs (used within last hour)
+  // Remaining tabs (used within last 15 minutes)
   const recentTabs = sorted.filter(t => !assigned.has(t.id));
   const recentPct = total > 0 ? Math.round((recentTabs.length / total) * 100) : 0;
 
@@ -567,8 +569,8 @@ function renderIdleTabs() {
 
     const label = document.createElement('span');
     const recentCountSpan = document.createElement('span');
-    recentCountSpan.textContent = `${recentTabs.length} tab${recentTabs.length !== 1 ? 's' : ''} used in the last hour`;
-    label.appendChild(makePopover(recentCountSpan, 'Tabs accessed within the last hour'));
+    recentCountSpan.textContent = `${recentTabs.length} tab${recentTabs.length !== 1 ? 's' : ''} used in the last 15 min`;
+    label.appendChild(makePopover(recentCountSpan, 'Tabs accessed within the last 15 minutes'));
     label.appendChild(document.createTextNode(' · '));
     const recentPctSpan = document.createElement('span');
     recentPctSpan.textContent = `${recentPct}%`;
