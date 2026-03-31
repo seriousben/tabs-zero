@@ -569,8 +569,12 @@ h1 {
 }
 
 /* Protected tabs */
+.idle-tab {
+  border-left: 3px solid transparent;
+}
+
 .idle-tab.is-protected {
-  border-left: 3px solid #058b00;
+  border-left-color: #058b00;
   opacity: 0.6;
 }
 
