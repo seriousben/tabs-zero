@@ -264,13 +264,16 @@ function updateTabCount() {
   const wontExpire = allTabs.filter(t => isNeverExpire(t)).length;
   const el = document.getElementById('tab-count');
   el.textContent = '';
-  el.appendChild(document.createTextNode(`${allTabs.length} tabs`));
+  const totalSpan = document.createElement('span');
+  totalSpan.textContent = `${allTabs.length} tabs`;
+  el.appendChild(makePopover(totalSpan, 'Total open tabs in this window'));
+
   if (wontExpire > 0) {
     el.appendChild(document.createTextNode(' · '));
     const span = document.createElement('span');
     span.className = 'wont-expire-count';
     span.textContent = `${wontExpire} won't expire`;
-    el.appendChild(span);
+    el.appendChild(makePopover(span, 'Pinned, active, audible, or marked do-not-expire'));
   }
 }
 
@@ -410,15 +413,24 @@ function renderIdleTabs() {
 
     const stats = document.createElement('span');
     stats.className = 'idle-group-stats';
-    stats.appendChild(document.createTextNode(String(group.expirable.length)));
+
+    const countSpan = document.createElement('span');
+    countSpan.textContent = String(group.expirable.length);
     if (group.protected.length > 0) {
-      stats.appendChild(document.createTextNode('+'));
+      countSpan.textContent += '+';
       const protSpan = document.createElement('span');
       protSpan.className = 'protected-count';
       protSpan.textContent = String(group.protected.length);
-      stats.appendChild(protSpan);
+      countSpan.appendChild(protSpan);
     }
-    stats.appendChild(document.createTextNode(` · ${group.pct}%`));
+    const countTip = group.protected.length > 0
+      ? `${group.expirable.length} closable + ${group.protected.length} protected`
+      : `${group.expirable.length} closable tabs`;
+    stats.appendChild(makePopover(countSpan, countTip));
+
+    const pctSpan = document.createElement('span');
+    pctSpan.textContent = ` · ${group.pct}%`;
+    stats.appendChild(makePopover(pctSpan, `${group.pct}% of all open tabs`));
 
     const closeBtn = document.createElement('button');
     closeBtn.className = 'btn-close-group';
@@ -554,7 +566,13 @@ function renderIdleTabs() {
     chevron.textContent = '›';
 
     const label = document.createElement('span');
-    label.textContent = `${recentTabs.length} tab${recentTabs.length !== 1 ? 's' : ''} used in the last hour · ${recentPct}%`;
+    const recentCountSpan = document.createElement('span');
+    recentCountSpan.textContent = `${recentTabs.length} tab${recentTabs.length !== 1 ? 's' : ''} used in the last hour`;
+    label.appendChild(makePopover(recentCountSpan, 'Tabs accessed within the last hour'));
+    label.appendChild(document.createTextNode(' · '));
+    const recentPctSpan = document.createElement('span');
+    recentPctSpan.textContent = `${recentPct}%`;
+    label.appendChild(makePopover(recentPctSpan, `${recentPct}% of all open tabs`));
 
     header.appendChild(chevron);
     header.appendChild(label);
