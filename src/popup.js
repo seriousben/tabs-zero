@@ -63,6 +63,52 @@ function makeLucideIcon(name, size) {
   return svg;
 }
 
+function getProtectionReason(tab) {
+  const reasons = [];
+  if (tab.pinned) reasons.push('Pinned');
+  if (tab.active) reasons.push('Active tab');
+  if (tab.audible) reasons.push('Playing audio');
+  if (isDoNotExpire(tab)) reasons.push('Marked do-not-expire');
+  if (tab.url && isSystemUrl(tab.url)) reasons.push('Browser page');
+  return reasons;
+}
+
+function makePopover(anchor, text) {
+  const wrapper = document.createElement('span');
+  wrapper.className = 'popover-anchor';
+
+  const bubble = document.createElement('span');
+  bubble.className = 'popover-bubble';
+  bubble.textContent = text;
+
+  wrapper.appendChild(anchor);
+  wrapper.appendChild(bubble);
+
+  wrapper.addEventListener('mouseenter', () => {
+    bubble.style.display = 'block';
+    const rect = wrapper.getBoundingClientRect();
+    // Position above the anchor, centered horizontally
+    bubble.style.left = rect.left + rect.width / 2 - bubble.offsetWidth / 2 + 'px';
+    bubble.style.top = rect.top - bubble.offsetHeight - 6 + 'px';
+    // Clamp to viewport edges
+    const bRect = bubble.getBoundingClientRect();
+    if (bRect.left < 4) bubble.style.left = '4px';
+    if (bRect.right > window.innerWidth - 4) {
+      bubble.style.left = window.innerWidth - 4 - bubble.offsetWidth + 'px';
+    }
+    if (bRect.top < 4) {
+      // Flip below if no room above
+      bubble.style.top = rect.bottom + 6 + 'px';
+    }
+  });
+
+  wrapper.addEventListener('mouseleave', () => {
+    bubble.style.display = 'none';
+  });
+
+  return wrapper;
+}
+
 function mockFavicon(url) {
   if (!url) return '';
   try {
@@ -316,6 +362,13 @@ function renderIdleTabs() {
         toggleDoNotExpire(tab.url);
       });
       actions.appendChild(dneBtn);
+    } else if (isNeverExpire(tab)) {
+      // Inherently protected: show shield with popover explaining why
+      const reasons = getProtectionReason(tab);
+      const shieldEl = document.createElement('span');
+      shieldEl.className = 'btn-do-not-expire is-active is-inherent';
+      shieldEl.appendChild(makeLucideIcon('shield'));
+      actions.appendChild(makePopover(shieldEl, reasons.join(', ')));
     }
 
     const closeBtn = document.createElement('button');
