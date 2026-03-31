@@ -3,11 +3,11 @@ import { findDuplicateGroups, selectDuplicatesToClose } from '../../src/core/dup
 
 describe('duplicates', () => {
   describe('findDuplicateGroups', () => {
-    it('returns 1 group with 3 tabs when 3 tabs have same URL', () => {
+    it('returns 1 group with 3 tabs when 3 tabs have same URL and title', () => {
       const tabs = [
-        { id: 1, url: 'https://example.com', lastAccessed: 100 },
-        { id: 2, url: 'https://example.com', lastAccessed: 200 },
-        { id: 3, url: 'https://example.com', lastAccessed: 300 },
+        { id: 1, url: 'https://example.com', title: 'Example', lastAccessed: 100 },
+        { id: 2, url: 'https://example.com', title: 'Example', lastAccessed: 200 },
+        { id: 3, url: 'https://example.com', title: 'Example', lastAccessed: 300 },
       ];
 
       const groups = findDuplicateGroups(tabs);
@@ -42,10 +42,21 @@ describe('duplicates', () => {
       expect(groups).toHaveLength(0);
     });
 
+    it('does not group tabs with same URL but different titles', () => {
+      const tabs = [
+        { id: 1, url: 'https://example.com', title: 'Page A', lastAccessed: 100 },
+        { id: 2, url: 'https://example.com', title: 'Page B', lastAccessed: 200 },
+      ];
+
+      const groups = findDuplicateGroups(tabs);
+
+      expect(groups).toHaveLength(0);
+    });
+
     it('normalizes URLs with trailing slash', () => {
       const tabs = [
-        { id: 1, url: 'https://example.com', lastAccessed: 100 },
-        { id: 2, url: 'https://example.com/', lastAccessed: 200 },
+        { id: 1, url: 'https://example.com', title: 'Example', lastAccessed: 100 },
+        { id: 2, url: 'https://example.com/', title: 'Example', lastAccessed: 200 },
       ];
 
       const groups = findDuplicateGroups(tabs);
@@ -64,6 +75,31 @@ describe('duplicates', () => {
       const groups = findDuplicateGroups(tabs);
 
       expect(groups).toHaveLength(0);
+    });
+
+    it('does not group tabs with same title but different URLs', () => {
+      const tabs = [
+        { id: 1, url: 'https://a.com/page1', title: 'Same Title', lastAccessed: 100 },
+        { id: 2, url: 'https://b.com/page2', title: 'Same Title', lastAccessed: 200 },
+      ];
+
+      const groups = findDuplicateGroups(tabs);
+
+      expect(groups).toHaveLength(0);
+    });
+
+    it('groups tabs with same URL and title', () => {
+      const tabs = [
+        { id: 1, url: 'https://example.com', title: 'Same', lastAccessed: 100 },
+        { id: 2, url: 'https://example.com', title: 'Same', lastAccessed: 200 },
+        { id: 3, url: 'https://example.com', title: 'Different', lastAccessed: 300 },
+      ];
+
+      const groups = findDuplicateGroups(tabs);
+
+      expect(groups).toHaveLength(1);
+      expect(groups[0].tabs).toHaveLength(2);
+      expect(groups[0].tabs.map(t => t.id)).toEqual(expect.arrayContaining([1, 2]));
     });
   });
 

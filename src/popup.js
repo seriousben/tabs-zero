@@ -197,15 +197,15 @@ function normalizeUrl(url) {
 }
 
 function findDuplicateIds() {
-  const byUrl = new Map();
+  const byKey = new Map();
   for (const tab of allTabs) {
     if (!tab.url || tab.url.startsWith('about:') || isProtected(tab)) continue;
-    const key = normalizeUrl(tab.url);
-    if (!byUrl.has(key)) byUrl.set(key, []);
-    byUrl.get(key).push(tab);
+    const key = normalizeUrl(tab.url) + '\0' + (tab.title || '');
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key).push(tab);
   }
   const dupIds = new Set();
-  for (const tabs of byUrl.values()) {
+  for (const tabs of byKey.values()) {
     if (tabs.length < 2) continue;
     tabs.sort((a, b) => b.lastAccessed - a.lastAccessed);
     for (let i = 1; i < tabs.length; i++) dupIds.add(tabs[i].id);

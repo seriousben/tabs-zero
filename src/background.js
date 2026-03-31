@@ -64,17 +64,17 @@ async function getExpirableTabs() {
 
   const expirable = tabs.filter(tab => !isProtected(tab));
 
-  // Find duplicate IDs (older copies)
+  // Find duplicate IDs (older copies) by URL + title
   const dupIds = new Set();
   if (settings.aggressiveDuplicates) {
-    const byUrl = new Map();
+    const byKey = new Map();
     for (const tab of expirable) {
       if (!tab.url || tab.url.startsWith('about:')) continue;
-      const key = normalizeUrl(tab.url);
-      if (!byUrl.has(key)) byUrl.set(key, []);
-      byUrl.get(key).push(tab);
+      const key = normalizeUrl(tab.url) + '\0' + (tab.title || '');
+      if (!byKey.has(key)) byKey.set(key, []);
+      byKey.get(key).push(tab);
     }
-    for (const group of byUrl.values()) {
+    for (const group of byKey.values()) {
       if (group.length < 2) continue;
       group.sort((a, b) => b.lastAccessed - a.lastAccessed);
       for (let i = 1; i < group.length; i++) dupIds.add(group[i].id);
