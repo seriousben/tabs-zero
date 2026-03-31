@@ -134,8 +134,14 @@ function formatAge(lastAccessed) {
   return `${Math.floor(diff / d)}d`;
 }
 
+function isSystemUrl(url) {
+  if (!url) return false;
+  if (url === 'about:newtab' || url === 'about:blank') return false;
+  return url.startsWith('about:') || url.startsWith('moz-extension:') || url.startsWith('chrome:');
+}
+
 function isProtected(tab) {
-  return tab.pinned || tab.active || tab.audible || (tab.url && tab.url.startsWith('about:')) || isDoNotExpire(tab);
+  return tab.pinned || tab.active || tab.audible || isSystemUrl(tab.url) || isDoNotExpire(tab);
 }
 
 // --- Duplicate detection ---
@@ -174,7 +180,7 @@ const BUCKETS = [
 function isNeverExpire(tab) {
   // Tabs that can never be expired regardless of settings
   return tab.pinned || tab.active || tab.audible || isDoNotExpire(tab) ||
-    (tab.url && (tab.url.startsWith('about:') || tab.url.startsWith('moz-extension:') || tab.url.startsWith('chrome:')));
+    isSystemUrl(tab.url);
 }
 
 function groupAllTabs() {
