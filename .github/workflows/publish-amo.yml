@@ -38,23 +38,24 @@ jobs:
       - name: Build
         run: npx web-ext build --source-dir=src --overwrite-dest
 
-      - name: Generate AMO metadata with release notes
-        run: |
-          # Extract release notes for this version
-          VERSION="${{ inputs.tag_name }}"
-          VERSION_NO_V="${VERSION#v}"
-          
-          # Extract release notes using our script
-          RELEASE_NOTES=$(node scripts/extract-release-notes.js "$VERSION_NO_V")
-          
-          # Create dynamic AMO metadata with release notes
-          jq --arg notes "$RELEASE_NOTES" '.release_notes = {"en-US": $notes}' amo-metadata.json > amo-metadata-release.json
-          
-          echo "Release notes for $VERSION:"
-          echo "$RELEASE_NOTES"
+      # Skip metadata for now due to validation issues
+      # - name: Generate AMO metadata with release notes
+      #   run: |
+      #     # Extract release notes for this version
+      #     VERSION="${{ inputs.tag_name }}"
+      #     VERSION_NO_V="${VERSION#v}"
+      #     
+      #     # Extract release notes using our script
+      #     RELEASE_NOTES=$(node scripts/extract-release-notes.js "$VERSION_NO_V")
+      #     
+      #     # Create dynamic AMO metadata with release notes
+      #     jq --arg notes "$RELEASE_NOTES" '.release_notes = {"en-US": $notes}' amo-metadata.json > amo-metadata-release.json
+      #     
+      #     echo "Release notes for $VERSION:"
+      #     echo "$RELEASE_NOTES"
 
       - name: Sign and submit to AMO
-        run: npx web-ext sign --source-dir=src --channel=listed --amo-metadata=amo-metadata-release.json
+        run: npx web-ext sign --source-dir=src --channel=listed
         env:
           WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}
