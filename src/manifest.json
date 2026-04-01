@@ -26,5 +26,7 @@
   "icons": {
     "48": "icons/icon.svg",
     "96": "icons/icon.svg"
-  }
+  },
+  "author": "seriousben",
+  "homepage_url": "https://github.com/seriousben/tabs-zero"
 }
