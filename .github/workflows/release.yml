@@ -11,61 +11,19 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
           release-type: simple
 
-      - uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.release_created }}
-
-      - uses: actions/setup-node@v4
-        if: ${{ steps.release.outputs.release_created }}
-        with:
-          node-version: 20
-          cache: npm
-
-      - run: npm ci
-        if: ${{ steps.release.outputs.release_created }}
-
-      - name: Unit tests
-        if: ${{ steps.release.outputs.release_created }}
-        run: npx vitest run
-
-      - name: Lint
-        if: ${{ steps.release.outputs.release_created }}
-        run: npx web-ext lint --source-dir=src
-
-      - name: Build
-        if: ${{ steps.release.outputs.release_created }}
-        run: npx web-ext build --source-dir=src --overwrite-dest
-
-      - name: Generate AMO metadata with release notes
-        if: ${{ steps.release.outputs.release_created }}
-        run: |
-          # Extract release notes for this version
-          VERSION="${{ steps.release.outputs.tag_name }}"
-          VERSION_NO_V="${VERSION#v}"
-          
-          # Extract release notes using our script
-          RELEASE_NOTES=$(node scripts/extract-release-notes.js "$VERSION_NO_V")
-          
-          # Create dynamic AMO metadata with release notes
-          jq --arg notes "$RELEASE_NOTES" '.release_notes = {"en-US": $notes}' amo-metadata.json > amo-metadata-release.json
-          
-          echo "Release notes for $VERSION:"
-          echo "$RELEASE_NOTES"
-
-      - name: Sign and submit to AMO
-        if: ${{ steps.release.outputs.release_created }}
-        run: npx web-ext sign --source-dir=src --channel=listed --amo-metadata=amo-metadata-release.json
-        env:
-          WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
-          WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}
-
-      - name: Upload to GitHub Release
-        if: ${{ steps.release.outputs.release_created }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ steps.release.outputs.tag_name }} web-ext-artifacts/*
+  publish-amo:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    uses: ./.github/workflows/publish-amo.yml
+    with:
+      tag_name: ${{ needs.release-please.outputs.tag_name }}
+    secrets: inherit

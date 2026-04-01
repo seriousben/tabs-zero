@@ -1,0 +1,65 @@
+name: Publish to AMO
+
+on:
+  workflow_call:
+    inputs:
+      tag_name:
+        required: true
+        type: string
+        description: 'Release tag to publish (e.g. v0.1.0)'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        required: true
+        type: string
+        description: 'Release tag to publish (e.g. v0.1.0)'
+
+jobs:
+  publish-amo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Unit tests
+        run: npx vitest run
+
+      - name: Lint
+        run: npx web-ext lint --source-dir=src
+
+      - name: Build
+        run: npx web-ext build --source-dir=src --overwrite-dest
+
+      - name: Generate AMO metadata with release notes
+        run: |
+          # Extract release notes for this version
+          VERSION="${{ inputs.tag_name }}"
+          VERSION_NO_V="${VERSION#v}"
+          
+          # Extract release notes using our script
+          RELEASE_NOTES=$(node scripts/extract-release-notes.js "$VERSION_NO_V")
+          
+          # Create dynamic AMO metadata with release notes
+          jq --arg notes "$RELEASE_NOTES" '.release_notes = {"en-US": $notes}' amo-metadata.json > amo-metadata-release.json
+          
+          echo "Release notes for $VERSION:"
+          echo "$RELEASE_NOTES"
+
+      - name: Sign and submit to AMO
+        run: npx web-ext sign --source-dir=src --channel=listed --amo-metadata=amo-metadata-release.json
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}
+
+      - name: Upload to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ inputs.tag_name }} web-ext-artifacts/* --clobber
