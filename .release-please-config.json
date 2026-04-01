@@ -1,7 +1,8 @@
 {
   "release-type": "simple",
+  "bootstrap-sha": "14d0081c0a9c0d28db8eeedfb8d8c7b57b062e48",
   "bump-minor-pre-major": true,
-  "bump-patch-for-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": false,
   "extra-files": [
     {
       "type": "json",
