@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.0](https://github.com/seriousben/tabs-zero/compare/v0.1.0...v0.2.0) (2026-04-01)
+
+
+### Features
+
+* separate AMO publishing into callable workflow ([e4f78d1](https://github.com/seriousben/tabs-zero/commit/e4f78d1c9e6b2755fcc06147b30bc6a988d9be0c))
+
+
+### Bug Fixes
+
+* add minimal AMO metadata with required license field ([b7c1d8d](https://github.com/seriousben/tabs-zero/commit/b7c1d8d14b07501a5b8ebbd85a9d17aa88482240))
+* add required categories field to AMO metadata ([d8d4929](https://github.com/seriousben/tabs-zero/commit/d8d49298d06daee0e183df98318222e3c86b7338))
+* correct AMO metadata format for validation ([23a84ae](https://github.com/seriousben/tabs-zero/commit/23a84ae5c7333876eeafc4b20ba29c2abaf19704))
+* put license inside version object in AMO metadata ([fdd5f7f](https://github.com/seriousben/tabs-zero/commit/fdd5f7f10ba7bb0e464553ba6acbc587bff42ea0))
+* skip AMO metadata for initial submission ([186932c](https://github.com/seriousben/tabs-zero/commit/186932caf67163f42659892700b56a27d9119c1e))
+
 ## 0.1.0 (2026-04-01)
 
 
