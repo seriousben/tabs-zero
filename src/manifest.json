@@ -20,7 +20,10 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "tabs-zero@seriousben"
+      "id": "tabs-zero@seriousben",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   },
   "icons": {
