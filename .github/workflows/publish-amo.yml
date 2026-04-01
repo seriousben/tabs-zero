@@ -38,14 +38,8 @@ jobs:
       - name: Build
         run: npx web-ext build --source-dir=src --overwrite-dest
 
-      - name: Create minimal AMO metadata
-        run: |
-          # license must be inside "version" object per AMO API
-          # categories uses format: {"firefox": ["slug"]}
-          echo '{"categories": {"firefox": ["tabs"]}, "version": {"license": "MIT"}}' > amo-metadata-minimal.json
-
       - name: Sign and submit to AMO
-        run: npx web-ext sign --source-dir=src --channel=listed --amo-metadata=amo-metadata-minimal.json
+        run: npx web-ext sign --source-dir=src --channel=listed --amo-metadata=amo-metadata.json
         env:
           WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}

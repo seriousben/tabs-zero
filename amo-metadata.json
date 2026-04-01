@@ -1,3 +1,20 @@
 {
-  "license": "MIT"
+  "categories": {
+    "firefox": ["tabs"]
+  },
+  "summary": {
+    "en-US": "Automatically close idle tabs. Inbox zero for your browser."
+  },
+  "description": {
+    "en-US": "Tabs Zero brings inbox zero methodology to your browser tabs.\n\nFeatures:\n- Auto-expire idle tabs with configurable thresholds (15 min to 30+ days)\n- Smart duplicate detection based on URL and title\n- Protection for important tabs (pinned, active, playing audio)\n- Close or switch to tabs directly from the popup\n- Tree Style Tab integration\n- Detailed stats with helpful explanations\n\nAll data is processed locally. Nothing is sent to external servers."
+  },
+  "homepage": {
+    "en-US": "https://github.com/seriousben/tabs-zero"
+  },
+  "support_url": {
+    "en-US": "https://github.com/seriousben/tabs-zero/issues"
+  },
+  "version": {
+    "license": "MIT"
+  }
 }
