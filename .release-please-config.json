@@ -1,0 +1,19 @@
+{
+  "release-type": "node",
+  "extra-files": [
+    {
+      "type": "json",
+      "path": "src/manifest.json",
+      "jsonpath": "$.version"
+    }
+  ],
+  "packages": {
+    ".": {
+      "changelog-sections": [
+        {"type": "feat", "section": "Features"},
+        {"type": "fix", "section": "Bug Fixes"},
+        {"type": "chore", "section": "Miscellaneous", "hidden": false}
+      ]
+    }
+  }
+}
