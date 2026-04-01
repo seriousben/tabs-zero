@@ -41,7 +41,8 @@ jobs:
       - name: Create minimal AMO metadata
         run: |
           # license must be inside "version" object per AMO API
-          echo '{"version": {"license": "MIT"}}' > amo-metadata-minimal.json
+          # categories uses format: {"firefox": ["slug"]}
+          echo '{"categories": {"firefox": ["tabs"]}, "version": {"license": "MIT"}}' > amo-metadata-minimal.json
 
       - name: Sign and submit to AMO
         run: npx web-ext sign --source-dir=src --channel=listed --amo-metadata=amo-metadata-minimal.json
