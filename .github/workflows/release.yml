@@ -16,8 +16,6 @@ jobs:
         id: release
         with:
           release-type: node
-          extra-files: |
-            src/manifest.json
 
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
