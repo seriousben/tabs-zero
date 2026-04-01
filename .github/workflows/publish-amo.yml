@@ -38,8 +38,18 @@ jobs:
       - name: Build
         run: npx web-ext build --source-dir=src --overwrite-dest
 
+      - name: Inject release notes into AMO metadata
+        run: |
+          VERSION="${{ inputs.tag_name }}"
+          VERSION_NO_V="${VERSION#v}"
+          NOTES=$(node scripts/extract-release-notes.js "$VERSION_NO_V")
+          # Merge release_notes into version object
+          jq --arg notes "$NOTES" '.version.release_notes = {"en-US": $notes}' amo-metadata.json > amo-metadata-final.json
+          echo "Release notes for $VERSION:"
+          echo "$NOTES"
+
       - name: Sign and submit to AMO
-        run: npx web-ext sign --source-dir=src --channel=listed --amo-metadata=amo-metadata.json
+        run: npx web-ext sign --source-dir=src --channel=listed --amo-metadata=amo-metadata-final.json
         env:
           WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}
